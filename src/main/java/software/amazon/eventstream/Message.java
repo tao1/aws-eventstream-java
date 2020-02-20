@@ -108,12 +108,16 @@ public class Message {
         Checksums.update(crc, (ByteBuffer) buf.duplicate().limit(buf.position() + totalLength - 4));
         long computedMessageCrc = crc.getValue();
 
-        long wireMessageCrc = Integer.toUnsignedLong(buf.getInt(buf.position() + totalLength - 4));
+        long wireMessageCrc = toUnsignedLong(buf.getInt(buf.position() + totalLength - 4));
 
         if (wireMessageCrc != computedMessageCrc) {
             throw new IllegalArgumentException(format("Message checksum failure: expected 0x%x, computed 0x%x",
                 wireMessageCrc, computedMessageCrc));
         }
+    }
+
+    public static long toUnsignedLong(int x) {
+        return (long)x & 4294967295L;
     }
 
     static Map<String, HeaderValue> decodeHeaders(ByteBuffer buf) {

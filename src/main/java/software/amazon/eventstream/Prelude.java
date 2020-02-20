@@ -37,9 +37,9 @@ final class Prelude {
 
         long computedPreludeCrc = computePreludeCrc(buf);
 
-        long totalLength = Integer.toUnsignedLong(buf.getInt());
-        long headersLength = Integer.toUnsignedLong(buf.getInt());
-        long wirePreludeCrc = Integer.toUnsignedLong(buf.getInt());
+        long totalLength = toUnsignedLong(buf.getInt());
+        long headersLength = toUnsignedLong(buf.getInt());
+        long wirePreludeCrc = toUnsignedLong(buf.getInt());
         if (computedPreludeCrc != wirePreludeCrc) {
             throw new IllegalArgumentException(format("Prelude checksum failure: expected 0x%x, computed 0x%x",
                 wirePreludeCrc, computedPreludeCrc));
@@ -56,6 +56,10 @@ final class Prelude {
         }
 
         return new Prelude(Math.toIntExact(totalLength), headersLength);
+    }
+
+    public static long toUnsignedLong(int x) {
+        return (long)x & 4294967295L;
     }
 
     private static long computePreludeCrc(ByteBuffer buf) {
